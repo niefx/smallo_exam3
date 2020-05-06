@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.niefx.cms.dao.RoomMapper">
+	
+	<!-- 批量添加数据 -->
+	<insert id="insertRooms">
+		insert into room (id,name,phone,tid,riqi,beiz) values
+		<foreach collection="list" item="c" separator=",">
+			(#{c.id},#{c.name},#{c.phone},#{c.tid},#{c.riqi},#{c.beiz})
+		</foreach>
+	</insert>
+	
+	<!-- 条件查询+动态SQL -->
+	<select id="select" resultType="Room">
+		SELECT a.*,b.tname,b.tprice from room as a LEFT JOIN
+		roomtype as b on a.tid=b.tid
+		<where>
+			<if test="name!=null and name!=''">
+				a.name like '%${name}%'
+			</if>
+			<if test="p1!=null">
+				and b.tprice >=#{p1}
+			</if>
+			<if test="p2!=null">
+				and b.tprice &lt;=#{p2}
+			</if>
+			<if test="t1!=null">
+				and a.riqi >=#{t1}
+			</if>
+			<if test="t2!=null">
+				and a.riqi &lt;=#{t2}
+			</if>
+			<if test="beiz!=null and beiz!=''">
+				and a.beiz like '%${beiz}%'
+			</if>
+		</where>
+	</select>
+	
+	<!-- 单个添加酒店预定信息 -->
+	<insert id="insertOne">
+		insert into room set id=#{id},name=#{name},phone=#{phone},tid=#{tid},riqi=#{riqi},beiz=#{beiz}
+	</insert>
+	
+	<!-- 查询所有房型 -->
+	<select id="seleRoomType" resultType="RoomType">
+		select * from roomtype
+	</select>
+	
+	<!-- 根据tid查询房型 -->
+	<select id="seleOneRoomType" resultType="RoomType">
+		select * from roomtype where tid=#{tid}
+	</select>
+</mapper>
